@@ -91,6 +91,7 @@ height: 150px;
 /* chart styles */
 
 .chartContainer {
+  margin: 30px auto;
   padding: 50px;
   text-align: center;
   width: 70%;

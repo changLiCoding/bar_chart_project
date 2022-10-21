@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+
+  <title>Bar Chart Project</title>
+
+</head>
+<body>
+  <div class="fetchContainer">
+        <form action="" method="post" onsubmit="submitHandler(event)">
+          <input type="text" name="" id="cityName" placeholder="Please enter a state" value="">
+          <button type="button" onclick="clickHandler(event)" class="btn searchBtn">Add to Chart!</button>
+          <button type="submit" class="btn">Compare</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="chartContainer">
+    <section  class="barContainer">
+    </section>
+
+
+
+  </div>
+
+
+  <script>
+    let cityArr = new Array();
+
+
+
+    // $.ajax({
+    // method: 'GET',
+    // url: 'https://api.api-ninjas.com/v1/country?name=United States',
+    // headers: { 'X-Api-Key': '0EUmzfaUWJ64vz4e+sgB5w==BTGaO7TJKKjRlFP8'},
+    // contentType: 'application/json',
+    // success: function(result) {
+    //     console.log(result);
+    // },
+    // error: function ajaxError(jqXHR) {
+    //     console.error('Error: ', jqXHR.responseText);
+    // }
+    // });
+    // data();
+    // console.log(data)
+
+    const usDataArr = new Array();
+
+    // const usData = new Promise((resolve, reject) => {
+    //   fetch(
+    //     'https://api.api-ninjas.com/v1/country?name=United States',
+    //   {
+    //     method: 'GET',
+    //     headers: {
+    //       'X-Api-Key': '0EUmzfaUWJ64vz4e+sgB5w==BTGaO7TJKKjRlFP8'
+    //     }
+    //   }
+    //   ).then(res => res.json())
+    //   .then(data =>  {
+    //     // console.log(data);
+    //     return data
+    //   }).then(data => {
+    //     usDataArr.push(data)
+    //     // console.log(usDataArr)
+    //     console.log(usDataArr[0][0].population)
+    //   })
+    // })
+
+    const countryDataFetch = async(countryName) => {
+      const res = await fetch(`https://api.api-ninjas.com/v1/country?name=${countryName}`,
+        {
+        method: 'GET',
+        headers: {
+          'X-Api-Key': '0EUmzfaUWJ64vz4e+sgB5w==BTGaO7TJKKjRlFP8'
+        }
+        });
+      const data = await res.json();
+      await cityArr.push([countryName, data[0].population])
+      await console.log(cityArr)
+    }
+
+
+    // fetch(
+    //   'https://api.api-ninjas.com/v1/country?name=United States',
+    //   {
+    //     method: 'GET',
+    //     headers: {
+    //       'X-Api-Key': '0EUmzfaUWJ64vz4e+sgB5w==BTGaO7TJKKjRlFP8'
+    //     }
+    //   }
+    // )
+    // .then(response => response.json)
+    // .then(data => {
+    //   console.log(data)
+    // })
+    let largestPopulation = 0;
+    const largestNumberHandler = (arr) => {
+      for (let i = 0; i<arr.length ; i++) {
+          if (arr[i][1] > largestPopulation) {
+            largestPopulation = arr[i][1];
+          }
+        }
+      }
+    
+
+    const clickHandler = (event) => {
+      const cityName = document.querySelector('#cityName');
+      countryDataFetch(cityName.value);
+      cityName.value = '';
+    }
+
+
+    const submitHandler = (event) => {
+
+      event.preventDefault();
+      for (let i = 0; i < cityArr.length; i++) {
+        const cityName = document.getElementById("cityName");
+        const newCity = document.querySelector('.barContainer');
+        const newChart = document.createElement('div');
+        newChart.innerHTML = `Country: ${cityArr[i][0]} \b Population: ${cityArr[i][1]}`;
+        newChart.setAttribute('class', 'location');
+        largestNumberHandler(cityArr);
+        newChart.setAttribute('style', `height: ${100 * cityArr[i][1] / largestPopulation}%`);
+        newCity.appendChild(newChart)
+      }
+      cityArr = [];
+    }
+  </script>
+
+</body>
+
+</html>
