@@ -79,7 +79,7 @@ updateInfoList( cityArr );
   {
     if ( $( ".search_input" ).val().length > 0 )
     {
-      let inputValue = $( ".search_input" ).css( "text-transform", "capitalize" ).val();
+      let inputValue = $( ".search_input" ).val();
       $( ".search_input" ).val( "" );
       countryDataFetch( inputValue )
     }
@@ -111,70 +111,71 @@ updateInfoList( cityArr );
 
 
 let option;
+let myChart;
 
 ( function ()
 {
-  let myChart = echarts.init( document.querySelector( '.chart-container' ) );
-  option = {
-    title: {
-      left: 'center',
-      text: 'Population in Different Countries',
-      subtext: 'In Millions',
-      subtextStyle: {
-        color: '#fff',
-      },
-      textStyle: {
-        color: '#fff',
-      }
-    },
-    tooltip: {},
-    grid: {
-      height: 370,
-      width: 690,
-      top: 70,
-      bottom: 60,
-    },
-    xAxis: {
-      name: 'Countries',
-      axisLine: {
-        lineStyle: {
-          color: '#fff'
-        }
-      },
-      type: 'category',
-      data: []
-    },
-    yAxis: {
-      name: 'Population in Millions',
-      axisLine: {
-        lineStyle: {
-          color: '#fff'
-        }
-      },
-      type: 'value'
-    },
-    series: [
-      {
-        data: [],
-        type: 'bar',
-        showBackground: true,
-        backgroundStyle: {
-          color: 'rgba(180, 180, 180, 0.2)'
-        }
-      }
-    ]
-  };
   $( ".btn-warning" ).on( 'click', function ()
   {
-    $( '.chart-container' ).removeAttr( '_echarts_instance_' ).empty();
+    option = {
+      title: {
+        left: 'center',
+        text: 'Population in Different Countries',
+        subtext: 'In Millions',
+        subtextStyle: {
+          color: '#fff',
+        },
+        textStyle: {
+          color: '#fff',
+        }
+      },
+      tooltip: {},
+      grid: {
+        height: 370,
+        width: 690,
+        top: 70,
+        bottom: 60,
+      },
+      xAxis: {
+        name: 'Countries',
+        axisLine: {
+          lineStyle: {
+            color: '#fff'
+          }
+        },
+        type: 'category',
+        data: []
+      },
+      yAxis: {
+        name: 'Population in Millions',
+        axisLine: {
+          lineStyle: {
+            color: '#fff'
+          }
+        },
+        type: 'value'
+      },
+      series: [
+        {
+          data: [],
+          type: 'bar',
+          showBackground: true,
+          backgroundStyle: {
+            color: 'rgba(180, 180, 180, 0.2)'
+          }
+        }
+      ]
+    };
+    $( '.chart-container' ).removeAttr( '_echarts_instance_' ).children().remove();
+    let myChart = echarts.init( document.querySelector( '.chart-container' ) );
     $.each( cityArr, function ( index, ele )
     {
       let pushedStr = titleCase( ele.country )
       option.xAxis.data.push( pushedStr );
       option.series[ 0 ].data.push( ele.population );
     } )
-    console.log( option )
     myChart.setOption( option );
+    myChart.dispose;
   } )
 
 } )();

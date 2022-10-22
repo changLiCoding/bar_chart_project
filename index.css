@@ -28,6 +28,7 @@ html {
 	caret-color: transparent;
 	line-height: 40px;
 	transition: width 0.4s linear;
+	text-transform: capitalize;
 }
 
 .searchbar:hover > .search_input {
