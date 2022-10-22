@@ -1,31 +1,38 @@
-const setLocalstorage = ( data ) =>
-{
-  localStorage.setItem( 'cityReport', JSON.stringify( data ) )
+
+// declare function for renew or update locoalstorage
+const setLocalstorage = ( data ) => {
+  localStorage.setItem( 'cityReport', JSON.stringify( data ) );
 };
 
-const getLocalstorage = () =>
-{
+// declare function for download localstorage to countryArr variable
+const getLocalstorage = () => {
   let temp = localStorage.getItem( 'cityReport' );
-  return JSON.parse( temp )
-}
+  return JSON.parse( temp );
+};
 
-const updateInfoList = ( arr ) =>
-{
-  $.each( arr, function ( index, ele )
-  {
+// declare function for iterating countryArr and update ul element
+const updateInfoList = ( arr ) => {
+  $.each( arr, function ( index, ele ) {
+    // iterate countryArr and declare local scope variables to get data from countryArr
     let countryName = ele.country;
     let population = ele.population;
+    // declare newLi variable to append into ul
+    // contain button style from FontAwesome to delete the element in the future
     let newLi = `<li class="list-group-item">
-					<span class="country">Country: ${ countryName }</span>
-					<span>Population: ${ population } Million</span>
-					<button class="delete-btn"><i class="fas fa-trash"></i></button>
-				</li>`
+    <span class="country">Country: ${ countryName }</span>
+    <span>Population: ${ population } Million</span>
+    <button class="delete-btn"><i class="fas fa-trash"></i></button>
+    </li>`;
+    // change all appended li with capitalized text
+    // set display as none and slide the new appended li with animation
     $( ".list-group" ).append( newLi ).children().css( 'text-transform', 'capitalize' ).css( 'display', 'none' ).stop().slideDown();
-  } )
-}
+  } );
+};
 
-const countryDataFetch = async ( countryName ) =>
-{
+let countryArr;
+// declare function for data fetching and renew data list
+const countryDataFetch = async ( countryName ) => {
+  // async await for data
   const res = await fetch( `https://api.api-ninjas.com/v1/country?name=${ countryName }`,
     {
       method: 'GET',
@@ -34,99 +41,91 @@ const countryDataFetch = async ( countryName ) =>
       }
     } );
   const data = await res.json();
-  for ( let i = 0; i < cityArr.length; i++ )
-  {
-    console.log( cityArr[ i ][ "population" ], data[ 0 ].population )
-    if ( cityArr[ i ][ "population" ] === data[ 0 ].population )
-    {
-      cityArr.splice( i, 1 );
+  // iterate data array make sure if user input is not a duplacated input
+  for ( let index = 0; index < countryArr.length; index++ ) {
+    if ( countryArr[ index ][ "population" ] === data[ 0 ].population ) {
+      // delete any old duplated info
+      countryArr.splice( index, 1 );
     }
-
   }
-  cityArr.push( { "country": countryName, "population": data[ 0 ].population } )
-  setLocalstorage( cityArr )
-  updateInfoList( [ cityArr[ cityArr.length - 1 ] ] )
-}
+  // update the data array and update lis list
+  countryArr.push( { "country": countryName, "population": data[ 0 ].population } );
+  // update localstorage with new data array
+  setLocalstorage( countryArr );
+  // make sure old ul empty and rerender new lis
+  $( '.list-group' ).empty();
+  updateInfoList( countryArr );
+};
 
 // Capitlize first letter of strings
-function titleCase ( str )
-{
+function titleCase ( str ) {
   newStr = str.slice( 0, 1 ).toUpperCase() + str.slice( 1 ).toLowerCase();
   return newStr;
 }
 
-
-let cityArr;
-
-// localStorage.removeItem( 'cityReport' )
-if ( getLocalstorage() === null )
-{
-  cityArr = new Array();
+// data array initialization
+if ( getLocalstorage() === null ) {
+  // if localstorage return null make sure initialized data is empty array instead of null
+  countryArr = new Array();
+} else {
+  countryArr = getLocalstorage();
 }
-else
-{
-  cityArr = getLocalstorage();
-}
-
-updateInfoList( cityArr );
+// using new country array to rerender ul
+updateInfoList( countryArr );
 
 
 
 
-( function ()
-{
-  $( "a.search_icon" ).on( "click", function ()
-  {
-    if ( $( ".search_input" ).val().length > 0 )
-    {
+( function () {
+  $( "a.search_icon" ).on( "click", function () {
+    if ( $( ".search_input" ).val().length > 0 ) {
       let inputValue = $( ".search_input" ).val();
       $( ".search_input" ).val( "" );
-      countryDataFetch( inputValue )
+      countryDataFetch( inputValue );
     }
-  } )
-} )();
+  } );
+}() );
+( function () {
+  $( ".search_input" ).keyup( function ( e ) {
+    if ( e.keyCode === 13 ) {
+      $( "a.search_icon" ).trigger( "click" );
+    }
+  } );
+}() );
 
-( function ()
-{
-  $( 'ul.list-group' ).on( 'click', '.delete-btn', function ()
-  {
+
+( function () {
+  $( 'ul.list-group' ).on( 'click', '.delete-btn', function () {
     let deleteMessage = ( $( this ).siblings( '.country' ).text() ).substring( 9 );
-    $.each( cityArr, function ( index, ele )
-    {
-      console.log( ele.country, deleteMessage, cityArr );
-      if ( ele.country === deleteMessage )
-      {
-        cityArr.splice( index, 1 );
-        console.log( cityArr )
-        setLocalstorage( cityArr );
-        return false
+    $.each( countryArr, function ( index, ele ) {
+      console.log( ele.country, deleteMessage, countryArr );
+      if ( ele.country === deleteMessage ) {
+        countryArr.splice( index, 1 );
+        console.log( countryArr );
+        setLocalstorage( countryArr );
+        return false;
       }
-    } )
-    $( this ).parent().stop().slideUp( function ()
-    {
+    } );
+    $( this ).parent().stop().slideUp( function () {
       $( this ).remove();
     } );
-  } )
-} )();
+  } );
+}() );
 
 
-let option;
-let myChart;
 
-( function ()
-{
-  $( ".btn-warning" ).on( 'click', function ()
-  {
-    option = {
+( function () {
+  $( ".btn-warning" ).on( 'click', function () {
+    let option = {
       title: {
         left: 'center',
         text: 'Population in Different Countries',
         subtext: 'In Millions',
         subtextStyle: {
-          color: '#fff',
+          color: '#fff'
         },
         textStyle: {
-          color: '#fff',
+          color: '#fff'
         }
       },
       tooltip: {},
@@ -134,7 +133,7 @@ let myChart;
         height: 370,
         width: 690,
         top: 70,
-        bottom: 60,
+        bottom: 60
       },
       xAxis: {
         name: 'Countries',
@@ -168,14 +167,13 @@ let myChart;
     };
     $( '.chart-container' ).removeAttr( '_echarts_instance_' ).children().remove();
     let myChart = echarts.init( document.querySelector( '.chart-container' ) );
-    $.each( cityArr, function ( index, ele )
-    {
-      let pushedStr = titleCase( ele.country )
+    $.each( countryArr, function ( index, ele ) {
+      let pushedStr = titleCase( ele.country );
       option.xAxis.data.push( pushedStr );
       option.series[ 0 ].data.push( ele.population );
-    } )
+    } );
     myChart.setOption( option );
     myChart.dispose;
-  } )
+  } );
 
-} )();
+}() );

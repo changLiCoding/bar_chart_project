@@ -30,7 +30,7 @@
 
 
   <script>
-    let cityArr = new Array();
+    let countryArr = new Array();
 
 
 
@@ -80,8 +80,8 @@
         }
         });
       const data = await res.json();
-      await cityArr.push([countryName, data[0].population])
-      await console.log(cityArr)
+      await countryArr.push([countryName, data[0].population])
+      await console.log(countryArr)
     }
 
 
@@ -106,7 +106,7 @@
           }
         }
       }
-    
+
 
     const clickHandler = (event) => {
       const cityName = document.querySelector('#cityName');
@@ -118,17 +118,17 @@
     const submitHandler = (event) => {
 
       event.preventDefault();
-      for (let i = 0; i < cityArr.length; i++) {
+      for (let i = 0; i < countryArr.length; i++) {
         const cityName = document.getElementById("cityName");
         const newCity = document.querySelector('.barContainer');
         const newChart = document.createElement('div');
-        newChart.innerHTML = `Country: ${cityArr[i][0]} \b Population: ${cityArr[i][1]}`;
+        newChart.innerHTML = `Country: ${countryArr[i][0]} \b Population: ${countryArr[i][1]}`;
         newChart.setAttribute('class', 'location');
-        largestNumberHandler(cityArr);
-        newChart.setAttribute('style', `height: ${100 * cityArr[i][1] / largestPopulation}%`);
+        largestNumberHandler(countryArr);
+        newChart.setAttribute('style', `height: ${100 * countryArr[i][1] / largestPopulation}%`);
         newCity.appendChild(newChart)
       }
-      cityArr = [];
+      countryArr = [];
     }
   </script>
 
