@@ -75,16 +75,19 @@ updateInfoList( countryArr );
 
 
 
-
+// Immediately invoked functions set click event on search icon
 ( function () {
   $( "a.search_icon" ).on( "click", function () {
     if ( $( ".search_input" ).val().length > 0 ) {
+      // declare variable from input value
       let inputValue = $( ".search_input" ).val();
       $( ".search_input" ).val( "" );
+      // invoke fetching function with input country name value
       countryDataFetch( inputValue );
     }
   } );
 }() );
+// immdiately invoked funciton to trigger click funciton with enter button
 ( function () {
   $( ".search_input" ).keyup( function ( e ) {
     if ( e.keyCode === 13 ) {
@@ -93,19 +96,28 @@ updateInfoList( countryArr );
   } );
 }() );
 
-
+// immdiately invoked function to add click event to every delete button in each new lis
 ( function () {
   $( 'ul.list-group' ).on( 'click', '.delete-btn', function () {
+    // declare variable from li's content
+    // substring cut off string that not important
     let deleteMessage = ( $( this ).siblings( '.country' ).text() ).substring( 9 );
+    // iterate array to find out which li was clicked
+    // by finding the same country name
     $.each( countryArr, function ( index, ele ) {
       console.log( ele.country, deleteMessage, countryArr );
       if ( ele.country === deleteMessage ) {
+        // pick up the array index that has the same country input with clicked country
+        // delete the certain country name with index
         countryArr.splice( index, 1 );
         console.log( countryArr );
+        // renew localstorage with new array
         setLocalstorage( countryArr );
+        // return false otherwise for loop would return undefined value
         return false;
       }
     } );
+    // remove the clicked li with animation
     $( this ).parent().stop().slideUp( function () {
       $( this ).remove();
     } );
@@ -113,9 +125,10 @@ updateInfoList( countryArr );
 }() );
 
 
-
+// function for envoke Echarts with print button
 ( function () {
   $( ".btn-warning" ).on( 'click', function () {
+    // declare Echarts data schema
     let option = {
       title: {
         left: 'center',
@@ -165,15 +178,21 @@ updateInfoList( countryArr );
         }
       ]
     };
+    // remove chart container Echarts attribute to refresh bar chart
+    // otherwise more chart would be added in the container
     $( '.chart-container' ).removeAttr( '_echarts_instance_' ).children().remove();
+    // declare echarts container
     let myChart = echarts.init( document.querySelector( '.chart-container' ) );
+    // iterate data array to renew data in Echarts schema
     $.each( countryArr, function ( index, ele ) {
       let pushedStr = titleCase( ele.country );
       option.xAxis.data.push( pushedStr );
       option.series[ 0 ].data.push( ele.population );
     } );
+    // render Echarts charts
     myChart.setOption( option );
-    myChart.dispose;
   } );
 
 }() );
+
+
